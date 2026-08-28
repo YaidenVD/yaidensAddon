@@ -1,0 +1,43 @@
+{
+	"schemaVersion": 1,
+	"id": "yaidensaddon",
+	"version": "${version}",
+	"name": "yaidensaddon",
+	"description": "idk",
+	"authors": [
+		"yaiden"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/yaidensaddon/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"gaydev.yaiden.femboysleeping.Yaidensaddon"
+		],
+		"client": [
+			"gaydev.yaiden.femboysleeping.client.YaidensaddonClient"
+		],
+		"fabric-datagen": [
+			"gaydev.yaiden.femboysleeping.client.YaidensaddonDataGenerator"
+		]
+	},
+	"mixins": [
+		"yaidensaddon.mixins.json",
+		{
+			"config": "yaidensaddon.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*",
+		"wildfire_gender": "3.2.1+1.21",
+		"roomfortwo": ">=0.0.1"
+	}
+}
