@@ -13,5 +13,8 @@ public class ModConfig {
     /** In-game days between a successful roll and the baby actually spawning. */
     public int gestationDays = 3;
 
+    /** Number of quiet "stage" chat notifications spread across gestationDays. */
+    public int stageCount = 3;
+
     public boolean allowGay = true;
 }

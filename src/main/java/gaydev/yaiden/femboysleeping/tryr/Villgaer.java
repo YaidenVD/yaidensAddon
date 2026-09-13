@@ -98,6 +98,8 @@ public class Villgaer {
             player1.getX(),
             player1.getY(),
             player1.getZ(),
+            player1.getUUID(),
+            currentDay,
             dueDay
         );
     }

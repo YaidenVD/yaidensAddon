@@ -13,6 +13,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * World-saved copy of the pending baby-villager spawns. Unlike a plain
@@ -22,7 +23,25 @@ import java.util.List;
  */
 public class SpawnSchedulerData extends SavedData {
 
-    public record Pending(long dueDay, double x, double y, double z, ResourceKey<Level> dimension) {}
+    /**
+     * currentStage is 0 at the start and counts up as days pass, purely
+     * for a quiet "you're on stage N" chat message - no gameplay effects
+     * attached to it.
+     */
+    public record Pending(
+        long startDay,
+        long dueDay,
+        double x,
+        double y,
+        double z,
+        ResourceKey<Level> dimension,
+        UUID playerId,
+        int currentStage
+    ) {
+        public Pending withStage(int newStage) {
+            return new Pending(startDay, dueDay, x, y, z, dimension, playerId, newStage);
+        }
+    }
 
     private final List<Pending> pending = new ArrayList<>();
 
@@ -54,6 +73,17 @@ public class SpawnSchedulerData extends SavedData {
         setDirty();
     }
 
+    /**
+     * Replaces an entry (used when its currentStage advances).
+     */
+    public void replace(Pending oldEntry, Pending newEntry) {
+        int index = pending.indexOf(oldEntry);
+        if (index >= 0) {
+            pending.set(index, newEntry);
+            setDirty();
+        }
+    }
+
     @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
 
@@ -63,11 +93,14 @@ public class SpawnSchedulerData extends SavedData {
 
             CompoundTag entry = new CompoundTag();
 
+            entry.putLong("startDay", spawn.startDay());
             entry.putLong("dueDay", spawn.dueDay());
             entry.putDouble("x", spawn.x());
             entry.putDouble("y", spawn.y());
             entry.putDouble("z", spawn.z());
             entry.putString("dimension", spawn.dimension().location().toString());
+            entry.putUUID("playerId", spawn.playerId());
+            entry.putInt("currentStage", spawn.currentStage());
 
             list.add(entry);
         }
@@ -91,14 +124,18 @@ public class SpawnSchedulerData extends SavedData {
             ResourceKey<Level> dimension = ResourceKey.create(Registries.DIMENSION, dimId);
 
             data.pending.add(new Pending(
+                entry.getLong("startDay"),
                 entry.getLong("dueDay"),
                 entry.getDouble("x"),
                 entry.getDouble("y"),
                 entry.getDouble("z"),
-                dimension
+                dimension,
+                entry.getUUID("playerId"),
+                entry.getInt("currentStage")
             ));
         }
 
         return data;
     }
 }
+

@@ -145,7 +145,9 @@ public class Yaidensaddon implements ModInitializer {
                 playersWhoSlept.clear();
                 sleepingPositions.clear();
 
-                // Spawn any babies whose gestationDays have elapsed.
+                // Advance any pending spawns' stage counter, then spawn
+                // anything whose gestationDays have elapsed.
+                SpawnScheduler.processStageUpdates(world.getServer(), day);
                 SpawnScheduler.processDueSpawns(world.getServer(), day);
             }
         });

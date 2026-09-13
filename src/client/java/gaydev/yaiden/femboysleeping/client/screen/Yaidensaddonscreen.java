@@ -45,6 +45,18 @@ public class Yaidensaddonscreen {
                         .build()
         );
 
+        general.addEntry(
+                builder.entryBuilder()
+                        .startIntField(
+                                Component.literal("Number of stage notifications"),
+                                config.stageCount
+                        )
+                        .setMin(1)
+                        .setMax(10)
+                        .setSaveConsumer(value -> config.stageCount = value)
+                        .build()
+        );
+
         // GAY
 
         var gay = builder.getOrCreateCategory(
