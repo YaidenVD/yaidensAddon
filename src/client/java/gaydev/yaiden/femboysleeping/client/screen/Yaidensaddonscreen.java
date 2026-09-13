@@ -1,71 +1,59 @@
 package gaydev.yaiden.femboysleeping.client.screen;
 
+import gaydev.yaiden.femboysleeping.config.YaidensaddonConfigManager;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 public class Yaidensaddonscreen {
-    public static int percentage = 5;
 
-    public static Screen create(Screen parent) {
+        public static Screen create(Screen parent) {
+
+        var config = YaidensaddonConfigManager.CONFIG;
 
         ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen(parent)
                 .setTitle(Component.literal("YaidensApi"));
 
-        // makes an catogory
-        var category = builder.getOrCreateCategory(
-                Component.literal("general")
-         );
-         var gay = builder.getOrCreateCategory(
-                Component.literal("gay")
-         );
-         var secret = builder.getOrCreateCategory(
-                Component.empty()
-         );
+        // GENERAL
 
-        // interger INPUT
-        category.addEntry(
-                builder.entryBuilder()
-                        .startIntField(
-                                Component.literal("percentage of spawning"),
-                                percentage
-                        ).setMin(0)
-                        .setMax(100)
-                        .setSaveConsumer(value -> percentage = value)
-                        .build()
+        var general = builder.getOrCreateCategory(
+                Component.literal("General")
         );
 
-        // SLIDER
-        category.addEntry(
+        general.addEntry(
                 builder.entryBuilder()
                         .startIntSlider(
-                                Component.literal(""),
-                                0,
+                                Component.literal("Baby spawn chance (%)"),
+                                config.sliderValue,
                                 0,
                                 100
                         )
+                        .setSaveConsumer(value -> config.sliderValue = value)
                         .build()
         );
 
-        // BOOLEAN / TOGGLE
+        // GAY
+
+        var gay = builder.getOrCreateCategory(
+                Component.literal("Gay")
+        );
+
         gay.addEntry(
                 builder.entryBuilder()
                         .startBooleanToggle(
-                                Component.literal("allow gay"),
-                                true
+                                Component.literal("Allow gay"),
+                                config.allowGay
                         )
+                        .setSaveConsumer(value -> config.allowGay = value)
                         .build()
         );
 
-        // string INPUT
-        secret.addEntry(
-                builder.entryBuilder()
-                        .startStrField(
-                                Component.literal(""),
-                                "..."
-                        )
-                        .build()
+        // SECRET
+
+        // Save everything when the Cloth Config screen is saved
+        builder.setSavingRunnable(
+                YaidensaddonConfigManager::save
         );
 
         return builder.build();

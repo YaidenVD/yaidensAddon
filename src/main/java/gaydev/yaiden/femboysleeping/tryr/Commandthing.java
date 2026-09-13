@@ -1,7 +1,11 @@
 package gaydev.yaiden.femboysleeping.tryr;
 
+import java.util.UUID;
+
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.wildfire.main.Gender;
 
+import gaydev.yaiden.femboysleeping.gayness.VillagerDataAccessor;
 import gaydev.yaiden.femboysleeping.mixin.VillagerEntityMixin;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.commands.Commands;
@@ -10,6 +14,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -19,11 +24,13 @@ import net.minecraft.world.item.enchantment.Enchantments;
 
 
 public class Commandthing {
-    static VillagerEntityMixin gay;
+    static VillagerDataAccessor gay;
     static Player player;
-    Commandthing(VillagerEntityMixin gay, Player player) {
+    static Entity entity;
+    Commandthing(VillagerDataAccessor gay, Player player, Entity entity) {
         Commandthing.gay = gay;
         Commandthing.player = player;
+        Commandthing.entity = entity;
     }
     
     public static void register() {
@@ -81,6 +88,41 @@ public class Commandthing {
                          *
                          * Returns the UUID of the selected entity.
                          */
+                        .then(
+    Commands.literal("setgender")
+        .then(
+            Commands.argument(
+                "uuid",
+                StringArgumentType.string()
+            )
+            .then(
+                Commands.argument(
+                    "gender",
+                    StringArgumentType.word()
+                )
+                .executes(context -> {
+
+                    UUID uuid = UUID.fromString(
+                        StringArgumentType.getString(
+                            context,
+                            "uuid"
+                        )
+                    );
+
+                    Gender gender = Gender.valueOf(
+                        StringArgumentType.getString(
+                            context,
+                            "gender"
+                        ).toUpperCase()
+                    );
+
+                    gay.setGender(gender);
+
+                    return 1;
+                })
+            )
+        )
+)
                        .then(
     Commands.literal("giveweapon")
         .then(

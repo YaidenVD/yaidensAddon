@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.npc.Villager;
+import gaydev.yaiden.femboysleeping.config.YaidensaddonConfigManager;
 import gaydev.yaiden.femboysleeping.gayness.VillagerDataAccessor;
 import gaydev.yaiden.femboysleeping.tryr.Commandthing;
 import gaydev.yaiden.femboysleeping.tryr.Vilgendersystem;
@@ -49,9 +50,9 @@ public class Yaidensaddon implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        
-        
-        
+
+        YaidensaddonConfigManager.load();
+
         Commandthing.register();
         ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
 
@@ -107,6 +108,11 @@ public class Yaidensaddon implements ModInitializer {
                         playersWhoSlept.size()
                 );
 
+                // Two players sharing a bed both end up in playersWhoSlept
+                // with the same BlockPos. De-dupe by position first so a
+                // shared bed only gets processed once instead of twice.
+                Set<BlockPos> processedBeds = new HashSet<>();
+
                 for (UUID uuid : playersWhoSlept) {
 
                     Player player =
@@ -120,15 +126,14 @@ public class Yaidensaddon implements ModInitializer {
                         BlockPos sleepingPos =
                                 sleepingPositions.get(uuid);
 
-                        if (sleepingPos != null) {
+                        if (sleepingPos != null && processedBeds.add(sleepingPos)) {
 
                             Villgaer villgaer =
                                     new Villgaer(
                                             player.level(),
                                             sleepingPos,
-                                            Villgaer.npc,
+                                            null,
                                             player
-                                            
                                     );
 
                             villgaer.gay();

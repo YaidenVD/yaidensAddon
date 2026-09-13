@@ -38,6 +38,8 @@
 		"java": ">=21",
 		"fabric-api": "*",
 		"wildfire_gender": "3.2.1+1.21",
-		"roomfortwo": ">=0.0.1"
+		"roomfortwo": ">=0.0.1",
+		"cloth-config": "*",
+		"modmenu": "*"
 	}
 }

@@ -15,6 +15,10 @@ repositories {
                 name = "Modrinth"
                 url = "https://api.modrinth.com/maven"
             }
+			maven {
+				name = "Terraformers"
+        		url = "https://maven.terraformersmc.com/"
+			}
         }
 
         filter {
@@ -53,7 +57,9 @@ dependencies {
 	// wildfires gendermod
 	modImplementation "maven.modrinth:bcOsQHnC:kJmjQvAS"
 	//cloth config
-	modImplementation "maven.modrinth:9s6osm5g:15.0.140+fabric"
+	modImplementation "maven.modrinth:cloth-config:15.0.140+fabric"
+	// mod menu
+    modImplementation("com.terraformersmc:modmenu:11.0.4")
 }
 
 processResources {
@@ -88,6 +94,9 @@ jar {
 	}
 }
 
+tasks.remapJar {
+	destinationDirectory = file("D:\\yaidensaddon-template-1.21.1\\yaidensAddon\\build\\libs")
+}
 // configure the maven publication
 publishing {
 	publications {
