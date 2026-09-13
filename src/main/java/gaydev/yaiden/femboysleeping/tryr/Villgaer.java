@@ -6,13 +6,10 @@ import com.wildfire.main.Gender;
 
 import gaydev.yaiden.femboysleeping.Yaidensaddon;
 import gaydev.yaiden.femboysleeping.config.YaidensaddonConfigManager;
-import gaydev.yaiden.femboysleeping.functions.Fabricatedfuncs;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricAdvancementProvider;
 import net.minecraft.core.BlockPos;
 
 import com.wildfire.main.entitydata.EntityConfig;
@@ -26,8 +23,7 @@ public class Villgaer {
 
     /**
      * npc is currently unused (kept for source compatibility with existing
-     * call sites) - gaypc() always spawns a brand new villager rather than
-     * reusing an existing one.
+     * call sites).
      */
     public Villgaer(Level level, BlockPos pos, Villager npc, Player player) {
         this.level = level;
@@ -37,10 +33,11 @@ public class Villgaer {
 
     /**
      * Looks for two sleeping players at this bed. If they have opposite
-     * Wildfire genders, rolls the configured spawn chance and spawns a
-     * baby villager if it hits.
+     * Wildfire genders, rolls the configured spawn chance, and if it hits,
+     * schedules a baby villager to spawn here `gestationDays` in-game days
+     * from now (see SpawnScheduler).
      */
-    public void gay() {
+    public void gay(long currentDay) {
 
         List<Player> players = this.level.getEntitiesOfClass(
             Player.class,
@@ -80,52 +77,28 @@ public class Villgaer {
             return;
         }
 
-        // this.player is whichever of the pair triggered the day-tick;
-        // used only for the spawn position / log message below.
         this.player = player1;
-
-        gaypc();
-    }
-
-    /**
-     * Rolls the configured spawn percentage and, if it hits, spawns a
-     * baby villager at the current player's position.
-     */
-    public void gaypc() {
 
         int roll = level.random.nextInt(1, 101);
         int chance = YaidensaddonConfigManager.CONFIG.sliderValue;
 
         if (roll > chance) {
             Yaidensaddon.LOGGER.info(
-                "gaypc(): rolled {} against {}%% chance, no spawn",
+                "gay(): rolled {} against {}% chance, no spawn scheduled",
                 roll,
                 chance
             );
             return;
         }
 
-        Villager villager = EntityType.VILLAGER.create(level);
+        long dueDay = currentDay + YaidensaddonConfigManager.CONFIG.gestationDays;
 
-        if (villager != null) {
-
-            villager.setAge(-24000);
-            villager.setBaby(true);
-
-            villager.moveTo(
-                player.getX(),
-                player.getY(),
-                player.getZ(),
-                0.0F,
-                0.0F
-            );
-
-            level.addFreshEntity(villager);
-
-            Yaidensaddon.LOGGER.info(
-                "Villager spawned near {}",
-                player.getName().getString()
-            );
-        }
+        SpawnScheduler.schedule(
+            level,
+            player1.getX(),
+            player1.getY(),
+            player1.getZ(),
+            dueDay
+        );
     }
 }

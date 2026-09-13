@@ -23,6 +23,7 @@ import gaydev.yaiden.femboysleeping.gayness.VillagerDataAccessor;
 import gaydev.yaiden.femboysleeping.tryr.Commandthing;
 import gaydev.yaiden.femboysleeping.tryr.Vilgendersystem;
 import gaydev.yaiden.femboysleeping.tryr.Villgaer;
+import gaydev.yaiden.femboysleeping.tryr.SpawnScheduler;
 
 public class Yaidensaddon implements ModInitializer {
 
@@ -136,13 +137,16 @@ public class Yaidensaddon implements ModInitializer {
                                             player
                                     );
 
-                            villgaer.gay();
+                            villgaer.gay(day);
                         }
                     }
                 }
 
                 playersWhoSlept.clear();
                 sleepingPositions.clear();
+
+                // Spawn any babies whose gestationDays have elapsed.
+                SpawnScheduler.processDueSpawns(world.getServer(), day);
             }
         });
 

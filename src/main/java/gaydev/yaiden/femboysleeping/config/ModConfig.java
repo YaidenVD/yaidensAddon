@@ -10,5 +10,8 @@ public class ModConfig {
     /** Chance (0-100) that a baby villager spawns when conditions are met. */
     public int sliderValue = 5;
 
+    /** In-game days between a successful roll and the baby actually spawning. */
+    public int gestationDays = 3;
+
     public boolean allowGay = true;
 }

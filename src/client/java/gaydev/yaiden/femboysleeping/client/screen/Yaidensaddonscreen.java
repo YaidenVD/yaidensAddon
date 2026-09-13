@@ -33,6 +33,18 @@ public class Yaidensaddonscreen {
                         .build()
         );
 
+        general.addEntry(
+                builder.entryBuilder()
+                        .startIntField(
+                                Component.literal("Days until spawn"),
+                                config.gestationDays
+                        )
+                        .setMin(0)
+                        .setMax(30)
+                        .setSaveConsumer(value -> config.gestationDays = value)
+                        .build()
+        );
+
         // GAY
 
         var gay = builder.getOrCreateCategory(
