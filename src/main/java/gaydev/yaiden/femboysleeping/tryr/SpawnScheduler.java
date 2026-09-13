@@ -1,35 +1,34 @@
 package gaydev.yaiden.femboysleeping.tryr;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import gaydev.yaiden.femboysleeping.Yaidensaddon;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.level.Level;
 
 /**
- * Holds baby-villager spawns that were "rolled" successfully but shouldn't
- * appear immediately - they wait until dueDay (currentDay + gestationDays)
- * before actually spawning.
- *
- * NOTE: this list is in-memory only. If the server restarts before a spawn
- * is due, it's lost. Fine for a small personal server; if that ever
- * matters, this would need to persist to NBT/a saved data file instead.
+ * Thin wrapper around SpawnSchedulerData (the actual persisted storage).
+ * Kept as a separate class so call sites (Villgaer, Yaidensaddon) don't
+ * need to know about SavedData plumbing.
  */
 public final class SpawnScheduler {
 
     private SpawnScheduler() {}
 
-    private record Pending(long dueDay, double x, double y, double z, ResourceKey<Level> dimension) {}
-
-    private static final List<Pending> pending = new ArrayList<>();
-
     public static void schedule(Level level, double x, double y, double z, long dueDay) {
-        pending.add(new Pending(dueDay, x, y, z, level.dimension()));
+
+        MinecraftServer server = level.getServer();
+
+        if (server == null) {
+            return;
+        }
+
+        SpawnSchedulerData.get(server).add(
+            new SpawnSchedulerData.Pending(dueDay, x, y, z, level.dimension())
+        );
 
         Yaidensaddon.LOGGER.info(
             "Scheduled baby spawn at {},{},{} for day {}",
@@ -43,23 +42,27 @@ public final class SpawnScheduler {
      */
     public static void processDueSpawns(MinecraftServer server, long currentDay) {
 
-        Iterator<Pending> iterator = pending.iterator();
+        SpawnSchedulerData data = SpawnSchedulerData.get(server);
 
-        while (iterator.hasNext()) {
+        List<SpawnSchedulerData.Pending> due = new ArrayList<>();
 
-            Pending spawn = iterator.next();
-
-            if (spawn.dueDay() > currentDay) {
-                continue;
+        for (SpawnSchedulerData.Pending spawn : data.getPending()) {
+            if (spawn.dueDay() <= currentDay) {
+                due.add(spawn);
             }
+        }
+
+        for (SpawnSchedulerData.Pending spawn : due) {
 
             Level level = server.getLevel(spawn.dimension());
 
             if (level != null) {
                 spawnBabyAt(level, spawn.x(), spawn.y(), spawn.z());
             }
+        }
 
-            iterator.remove();
+        if (!due.isEmpty()) {
+            data.removeAll(due);
         }
     }
 
@@ -83,3 +86,4 @@ public final class SpawnScheduler {
         );
     }
 }
+
