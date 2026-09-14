@@ -6,6 +6,7 @@ import com.wildfire.main.Gender;
 
 import gaydev.yaiden.femboysleeping.Yaidensaddon;
 import gaydev.yaiden.femboysleeping.config.YaidensaddonConfigManager;
+import gaydev.yaiden.femboysleeping.gayness.VillagerDataAccessor;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -32,14 +33,17 @@ public class Villgaer {
     }
 
     /**
-     * Looks for two sleeping players at this bed. If they have opposite
-     * Wildfire genders, rolls the configured spawn chance, and if it hits,
-     * schedules a baby villager to spawn here `gestationDays` in-game days
-     * from now (see SpawnScheduler).
+     * Two ways this can trigger:
+     *  - Two real players sharing a bed (opposite Wildfire genders), or
+     *  - One player sharing a bed with a villager via Room For Two
+     *    (singleplayer-friendly path; uses the villager's own persisted
+     *    gender rather than rerolling one).
+     * Either way, if genders are opposite, rolls the configured spawn
+     * chance and schedules a baby villager `gestationDays` days out.
      */
     public void gay(long currentDay) {
 
-        List<Player> players = this.level.getEntitiesOfClass(
+        List<Player> sleepingPlayers = this.level.getEntitiesOfClass(
             Player.class,
             new AABB(this.pos).inflate(4.0),
             p -> p.isSleeping()
@@ -47,31 +51,60 @@ public class Villgaer {
                 && p.getSleepingPos().get().equals(this.pos)
         );
 
-        if (players.size() < 2) {
-            Yaidensaddon.LOGGER.info(
-                "gay(): only {} sleeping player(s) at {}, skipping",
-                players.size(),
-                this.pos
-            );
+        if (sleepingPlayers.isEmpty()) {
             return;
         }
 
-        Player player1 = players.get(0);
-        Player player2 = players.get(1);
-
+        Player player1 = sleepingPlayers.get(0);
         EntityConfig config1 = EntityConfig.getEntity(player1);
-        EntityConfig config2 = EntityConfig.getEntity(player2);
 
-        if (config1 == null || config2 == null) {
+        if (config1 == null) {
             return;
         }
 
         Gender gender1 = config1.getGender();
-        Gender gender2 = config2.getGender();
+        Gender partnerGender;
+
+        if (sleepingPlayers.size() >= 2) {
+
+            // Two-player path.
+            EntityConfig config2 = EntityConfig.getEntity(sleepingPlayers.get(1));
+
+            if (config2 == null) {
+                return;
+            }
+
+            partnerGender = config2.getGender();
+
+        } else {
+
+            // Singleplayer path: look for an adult villager sharing the
+            // bed via Room For Two instead of a second player.
+            List<Villager> nearbyVillagers = this.level.getEntitiesOfClass(
+                Villager.class,
+                new AABB(this.pos).inflate(4.0),
+                v -> v.isSleeping()
+                    && v.getSleepingPos().isPresent()
+                    && v.getSleepingPos().get().equals(this.pos)
+                    && !v.isBaby()
+            );
+
+            if (nearbyVillagers.isEmpty()) {
+                return;
+            }
+
+            VillagerDataAccessor accessor = (VillagerDataAccessor) nearbyVillagers.get(0);
+
+            if (!accessor.hasGender()) {
+                return;
+            }
+
+            partnerGender = accessor.getGender();
+        }
 
         boolean oppositeGenders =
-            (gender1 == Gender.MALE && gender2 == Gender.FEMALE)
-                || (gender1 == Gender.FEMALE && gender2 == Gender.MALE);
+            (gender1 == Gender.MALE && partnerGender == Gender.FEMALE)
+                || (gender1 == Gender.FEMALE && partnerGender == Gender.MALE);
 
         if (!oppositeGenders) {
             return;
