@@ -15,10 +15,6 @@ repositories {
                 name = "Modrinth"
                 url = "https://api.modrinth.com/maven"
             }
-			maven {
-				name = "Terraformers"
-        		url = "https://maven.terraformersmc.com/"
-			}
         }
 
         filter {
@@ -53,13 +49,13 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
     // Room For Two
-    modImplementation "maven.modrinth:YZlvzIFq:2YB8UCb0"
+    modImplementation "maven.modrinth:YZlvzIFq:Vi8nabsH"
 	// wildfires gendermod
 	modImplementation "maven.modrinth:bcOsQHnC:kJmjQvAS"
 	//cloth config
 	modImplementation "maven.modrinth:cloth-config:15.0.140+fabric"
 	// mod menu
-    modImplementation("com.terraformersmc:modmenu:11.0.4")
+    modImplementation("maven.modrinth:mOgUt4GM:v6Xx3fbU")
 }
 
 processResources {
