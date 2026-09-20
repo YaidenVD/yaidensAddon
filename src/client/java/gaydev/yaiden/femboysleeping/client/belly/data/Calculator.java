@@ -1,6 +1,6 @@
-package gaydev.yaiden.femboysleeping.belly.data;
+package gaydev.yaiden.femboysleeping.client.belly.data;
 
-public class calculator {
+public class Calculator {
     public float calculateBellyGrowth(float pregnancyProgress) {
 
     float growth;

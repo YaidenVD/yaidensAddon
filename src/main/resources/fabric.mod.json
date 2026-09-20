@@ -21,6 +21,9 @@
 		"client": [
 			"gaydev.yaiden.femboysleeping.client.YaidensaddonClient"
 		],
+		"modmenu": [
+      		"gaydev.yaiden.femboysleeping.config.YaidensaddonConfigManager"
+    	],
 		"fabric-datagen": [
 			"gaydev.yaiden.femboysleeping.client.YaidensaddonDataGenerator"
 		]
