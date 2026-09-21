@@ -91,7 +91,12 @@ jar {
 }
 
 tasks.remapJar {
-	destinationDirectory = file("D:\\yaidensaddon-template-1.21.1\\yaidensAddon\\build\\libs")
+	// Only redirect the jar to your home PC's folder if that folder exists.
+	// On any other machine (school laptop, GitHub Actions) it falls back to build/libs.
+	def homePcRoot = new File("D:\\yaidensaddon-template-1.21.1")
+	if (homePcRoot.isDirectory()) {
+		destinationDirectory = file("D:\\yaidensaddon-template-1.21.1\\yaidensAddon\\build\\libs")
+	}
 }
 // configure the maven publication
 publishing {
