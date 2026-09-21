@@ -66,12 +66,12 @@ public class Pregnant<T extends Entity> extends EntityModel<T> {
                     .texOffs(17, 22)
                     .addBox(
                             // x, y, z, width, height, depth
-                            -3.0F, 9.18F, -2.0F,
+                            -3.0F, 6.0F, -2.0F,
                             6.0F, 0.04F, 4.0F,
                             new CubeDeformation(0.2F)
                     ),
             PartPose.offsetAndRotation(
-                    0.0F, 0.0F, -2.0F,
+                    -0.0F, 0.0F, -2.0F,
                     -0.1309F, 0.0F, 0.0F
             )
     );
