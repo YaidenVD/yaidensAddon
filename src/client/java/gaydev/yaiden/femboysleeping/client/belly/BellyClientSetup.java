@@ -1,6 +1,7 @@
 package gaydev.yaiden.femboysleeping.client.belly;
 
 import gaydev.yaiden.femboysleeping.client.belly.renderer.PregnantBellyLayer;
+import gaydev.yaiden.femboysleeping.client.belly.Pregnant;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
@@ -20,6 +21,7 @@ public final class BellyClientSetup {
         // 1) Tell the game how to build the model (this was missing - without it
         //    modelSet.bakeLayer(...) crashes / the layer can never exist).
         EntityModelLayerRegistry.registerModelLayer(Pregnant.LAYER_LOCATION, Pregnant::createBodyLayer);
+        Pregnant.createBodyLayer();
         LOGGER.info("[belly] model layer registered");
 
         // 2) Add the layer to every player renderer (there is one for the wide arms
