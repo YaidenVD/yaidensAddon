@@ -20,7 +20,6 @@ public final class BellyClientSetup {
         // 1) Tell the game how to build the model (this was missing - without it
         //    modelSet.bakeLayer(...) crashes / the layer can never exist).
         EntityModelLayerRegistry.registerModelLayer(Pregnant.LAYER_LOCATION, Pregnant::createBodyLayer);
-        Pregnant.createBodyLayer();
         LOGGER.info("[belly] model layer registered");
 
         // 2) Add the layer to every player renderer (there is one for the wide arms
