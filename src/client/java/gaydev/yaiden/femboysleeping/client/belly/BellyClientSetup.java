@@ -1,6 +1,7 @@
 package gaydev.yaiden.femboysleeping.client.belly;
 
 import gaydev.yaiden.femboysleeping.client.belly.renderer.PregnantBellyLayer;
+import gaydev.yaiden.femboysleeping.client.belly.Pregnant;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;

@@ -31,53 +31,28 @@ public class Pregnant<T extends Entity> extends EntityModel<T> {
             ResourceLocation.fromNamespaceAndPath("yaidensaddon", "pregnant"), "main");
 
     private final ModelPart belly;
-    private final ModelPart bellyBottom;
 
     public Pregnant(ModelPart root) {
         this.belly = root.getChild("belly");
-        this.bellyBottom = this.belly.getChild("belly_bottom");
     }
 
     public static LayerDefinition createBodyLayer() {
-    MeshDefinition mesh = new MeshDefinition();
-    PartDefinition root = mesh.getRoot();
+        MeshDefinition mesh = new MeshDefinition();
+        PartDefinition root = mesh.getRoot();
 
-    // Main belly
-    PartDefinition belly = root.addOrReplaceChild(
-            "belly",
-            CubeListBuilder.create()
-                    .texOffs(17, 22)
-                    .addBox(
-                            // x, y, z, width, height, depth
-                            -3.0F, 6.0F, -2.0F,
-                            6.0F, 6.0F, 4.0F,
-                            new CubeDeformation(0.2F)
-                    ),
-            PartPose.offsetAndRotation(
-                    0.0F, 0.0F, -2.0F,
-                    -0.1309F, 0.0F, 0.0F
-            )
-    );
+        root.addOrReplaceChild(
+                "belly",
+                CubeListBuilder.create()
+                        .texOffs(17, 22)
+                        // x, y, z, width, height, depth
+                        .addBox(-3.0F, 6.0F, -2.0F, 6.0F, 6.0F, 4.0F,
+                                // small inflate so it doesn't z-fight with the torso
+                                new CubeDeformation(0.2F)),
+                PartPose.ZERO);
 
-    // Bottom is now CHILD of belly
-    belly.addOrReplaceChild(
-            "belly_bottom",
-            CubeListBuilder.create()
-                    .texOffs(17, 22)
-                    .addBox(
-                            // x, y, z, width, height, depth
-                            -3.0F, 6.0F, -2.0F,
-                            6.0F, 0.04F, 4.0F,
-                            new CubeDeformation(0.2F)
-                    ),
-            PartPose.offsetAndRotation(
-                    -0.0F, 0.0F, -2.0F,
-                    -0.1309F, 0.0F, 0.0F
-            )
-    );
-
-    return LayerDefinition.create(mesh, 64, 64);
-}
+        // 64x64 = the standard modern skin layout
+        return LayerDefinition.create(mesh, 64, 64);
+    }
 
     @Override
     public void setupAnim(T entity, float limbSwing, float limbSwingAmount,
@@ -89,12 +64,5 @@ public class Pregnant<T extends Entity> extends EntityModel<T> {
     public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer,
                                int packedLight, int packedOverlay, int color) {
         belly.render(poseStack, buffer, packedLight, packedOverlay, color);
-        bellyBottom.render(
-            poseStack,
-            buffer,
-            packedLight,
-            packedOverlay,
-            color
-    );
     }
 }
